@@ -1,0 +1,36 @@
+---
+
+- name: Install Audit packages
+  become: yes
+  yum:
+    exclude: requests
+    name:
+      - '{{ item.key }}-{{ item.value.version }}'
+    state: latest
+  loop: "{{ query('dict', third_party) }}"
+
+- name: Copy auditd config files
+  become: yes
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: '0600'
+    owner: root
+    group: root
+  register: copy_auditd_files
+  loop:
+    - { src: 'auditd', dest: '/etc/sysconfig/auditd' }
+    - { src: 'auditd.conf', dest: '/etc/audit/auditd.conf' }
+    - { src: 'audit.rules', dest: '/etc/audit/rules.d/audit.rules' }
+    - { src: 'audit.rules', dest: '/etc/audit/audit.rules' }
+    - { src: 'auditd.service', dest: '/etc/systemd/system/auditd.service' }
+
+- name: Stop auditd service if config changed
+  become: yes
+  shell: '/sbin/service auditd stop'
+  when: copy_auditd_files.changed or ansible_facts['services']["auditd.service"] is not defined or ansible_facts['services']["auditd.service"]['state'] != 'running'
+
+- name: Start auditd service if config changed
+  become: yes
+  shell: '/sbin/service auditd start'
+  when: copy_auditd_files.changed or ansible_facts['services']["auditd.service"] is not defined or ansible_facts['services']["auditd.service"]['state'] != 'running'
