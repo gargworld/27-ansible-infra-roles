@@ -2,9 +2,9 @@
   hosts: all
   become: true
   roles:
-    - system-setup
-    - docker-setup
-    - cloudwatch_agent
-    - artifactory
-    - efs
+#    - system-setup
+#    - docker-setup
+#    - cloudwatch_agent
+#    - artifactory
+#    - efs
     - auditd

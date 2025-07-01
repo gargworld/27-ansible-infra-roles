@@ -4,8 +4,9 @@ DefaultDependencies=no
 After=local-fs.target systemd-tmpfiles-setup.service
 Conflicts=shutdown.target
 Before=sysinit.target shutdown.target
-RefuseManualStop=yes
 ConditionKernelCommandLine=!audit=0
+RefuseManualStart=no
+RefuseManualStop=no
 
 [Service]
 ExecStart=/sbin/auditd -n
@@ -13,8 +14,8 @@ ExecStart=/sbin/auditd -n
 ## from /usr/lib/systemd/system/auditd.service.
 ## augenrules line was commented out so that we could use auditctl
 ## NOTE: augenrules expect any rules to be added to /etc/audit/rules.d/
-#ExecStartPost=-/sbin/augenrules --load
-ExecStartPost=-/sbin/auditctl -R /etc/audit/audit.rules
+ExecStartPost=-/sbin/augenrules --load
+ExecStartPost=-/sbin/auditctl -R /etc/audit/rules.d/audit.rules
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

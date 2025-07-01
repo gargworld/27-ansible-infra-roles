@@ -1,4 +1,4 @@
 ---
 third_party:
   audit:
-      version: '3.0.*'
+      version: '2.8.*'
