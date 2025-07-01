@@ -1,0 +1,21 @@
+[Unit]
+Description=Security Auditing Service
+DefaultDependencies=no
+After=local-fs.target systemd-tmpfiles-setup.service
+Conflicts=shutdown.target
+Before=sysinit.target shutdown.target
+RefuseManualStop=yes
+ConditionKernelCommandLine=!audit=0
+
+[Service]
+ExecStart=/sbin/auditd -n
+## We did not want to use augenrules so this file was copied
+## from /usr/lib/systemd/system/auditd.service.
+## augenrules line was commented out so that we could use auditctl
+## NOTE: augenrules expect any rules to be added to /etc/audit/rules.d/
+#ExecStartPost=-/sbin/augenrules --load
+ExecStartPost=-/sbin/auditctl -R /etc/audit/audit.rules
+ExecReload=/bin/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

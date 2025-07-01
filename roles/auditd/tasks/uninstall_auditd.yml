@@ -1,0 +1,24 @@
+---
+
+- name: Remove auditd
+  become: yes
+  yum:
+    exclude: requests
+    name:
+      - '{{ item.key }}-{{ item.value.version }}'
+    state: absent
+  loop: "{{ query('dict', third_party) }}"
+
+- name: Remove files
+  become: yes
+  file:
+    path: "{{ item.dest }}"
+    state: absent
+  loop:
+    - { src: 'auditd', dest: '/etc/sysconfig/auditd' }
+    - { src: 'auditd.conf', dest: '/etc/audit/auditd.conf' }
+    - { src: 'audit.rules', dest: '/etc/audit/rules.d/audit.rules' }
+    - { src: 'auditd', dest: '/etc/systemd/system/auditd.service' }
+
+- name: "systemctl daemon-reload"
+  shell: "systemctl daemon-reload"

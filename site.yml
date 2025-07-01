@@ -7,3 +7,4 @@
     - cloudwatch_agent
     - artifactory
     - efs
+    - auditd
