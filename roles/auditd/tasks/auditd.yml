@@ -22,7 +22,7 @@
     - { src: 'auditd', dest: '/etc/sysconfig/auditd' }
     - { src: 'auditd.conf', dest: '/etc/audit/auditd.conf' }
     - { src: 'audit.rules', dest: '/etc/audit/rules.d/audit.rules' }
-    - { src: 'audit.rules', dest: '/etc/audit/audit.rules' }
+#    - { src: 'audit.rules', dest: '/etc/audit/audit.rules' }
     - { src: 'auditd.service', dest: '/etc/systemd/system/auditd.service' }
 
 - name: Stop auditd service if config changed
