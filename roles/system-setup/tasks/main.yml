@@ -11,11 +11,30 @@
 - name: Clean Yum metadata
   command: yum clean all
 
-- name: Rebuild Yum cache
-  command: yum makecache
+- name: Clean yum metadata and rebuild cache (CentOS 7 only)
+  ansible.builtin.shell: |
+    yum clean metadata
+    yum makecache
+  args:
+    warn: false
+  when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-- name: Clean all yum metadata
-  command: yum clean metadata
+- name: Run yum update using shell
+  ansible.builtin.shell: yum -y update
+  args:
+    warn: false
+
+- name: Copy required repos to AWS EC2 Instance
+  become: yes
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+    owner: root
+    group: root
+  register: copy_repo_files
+  loop:
+    - { src: 'almalinux.repo', dest: '/etc/yum.repos.d' }
 
 - name: system setup Install required dependencies
   package:
