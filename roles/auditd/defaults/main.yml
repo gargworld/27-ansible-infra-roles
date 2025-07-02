@@ -1,7 +1,5 @@
 ---
-auditd_versions:
-  RedHat:
-    "7": "2.8.*"
-    "9": "3.1.*"
 
-auditd_version: "{{ auditd_versions[ansible_os_family][ansible_distribution_major_version] | default('latest') }}"
+third_party:
+  audit:
+      version: '*'
