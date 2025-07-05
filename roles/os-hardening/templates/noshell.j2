@@ -1,0 +1,13 @@
+#!/bin/sh
+
+trap "" 1 2 3 4 5 6 7 8 9 10 12 15 19
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/bsd
+export PATH
+
+HNAME="`uname -n`"
+UNAME="`id | awk '{ print $1 }'`"
+
+logger -i -p auth.crit "{$UNAME} attempted unauthorized access on ${HNAME}"
+
+wait
+exit

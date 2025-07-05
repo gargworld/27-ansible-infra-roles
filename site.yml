@@ -5,6 +5,7 @@
     - system-setup
     - docker-setup
     - cloudwatch_agent
-    - artifactory
-    - efs
-#    - auditd
+#    - artifactory
+#    - efs
+    - auditd
+    - os-hardening

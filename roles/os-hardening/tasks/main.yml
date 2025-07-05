@@ -1,0 +1,137 @@
+# Copyright 2024 Raytheon Company
+---
+
+- name: Gather service facts
+  service_facts:
+
+# for Harden Services below, it was found under JUST-5276 several services were indicating a daemon-reload was necessary
+# resolution was to add the daemon_reload: yes to fix this issue noting that there was 2-9 second total difference in execution time
+
+- name: Harden Services
+  become: yes
+  systemd:
+    name: "{{ item.name }}"
+    enabled: "{{ item.enabled }}"
+    state: "{{ item.state }}"
+    masked: "{{ item.masked | default('yes') }}"
+    daemon_reload: yes
+  when: ansible_facts.services[item.name + '.service'] is defined
+  loop: "{{ os_hardening.services }}"
+
+- name: Disable targets
+  become: yes
+  systemd:
+    name: "{{ item }}.target"
+    enabled: no
+    masked: yes
+    daemon_reload: yes
+  loop: "{{ os_hardening_disabled_targets }}"
+
+- name: Check for daemon-reload needed
+  become: yes
+  shell:
+    cmd: "systemctl status --all 2>&1 | egrep '^Warning.*systemctl daemon-reload' | grep -v grep"
+  register: systemctl_daemon_reload
+  changed_when: false
+  failed_when: false
+
+- name: Do daemon-reload when needed
+  become: yes
+  systemd:
+    daemon_reload: yes
+  when: systemctl_daemon_reload.stdout is search('daemon-reload')
+
+- name: Harden Directories
+  become: yes
+  file:
+    path: "{{ item.name }}"
+    state: "{{ item.state | default('directory') }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0750') }}"
+    setype: "{{ item.setype | default('_default') }}"
+  loop: "{{ os_hardening.directories }}"
+
+- name: Source Templates
+  become: yes
+  template:
+    src: "{{ item.source }}"
+    dest: "{{ item.name }}"
+    owner: "{{ item.owner | default('root') }}"
+    group: "{{ item.group | default('root') }}"
+    mode: "{{ item.mode | default('0644') }}"
+  loop: "{{ os_hardening.templates }}"
+
+- name: systemd logind.conf template
+  become: yes
+  template:
+    src: "logind.conf.j2"
+    dest: "/etc/systemd/logind.conf"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  register: systemd_logind_restart_needed
+ 
+- name: Restart systemd-logind if needed
+  become: yes
+  systemd:
+    name: "systemd-logind"
+    state: restarted
+  when: systemd_logind_restart_needed.changed
+
+- name: Collect Stats for Harden files
+  become: yes
+  stat:
+    path: "{{ item.name }}"
+  loop: "{{ os_hardening.files }}"
+  register: harden_os_file_stats
+
+- name: Harden Files
+  become: yes
+  file:
+    path: "{{ item.item.name }}"
+    state: "{{ item.item.state | default('file') }}"
+    owner: "{{ item.item.owner | default('root') }}"
+    group: "{{ item.item.group | default('root') }}"
+    mode: "{{ item.item.mode | default('0644') }}"
+  when: item.stat.exists
+  with_items:
+    - "{{ harden_os_file_stats.results }}"
+
+- name: Harden Packages
+  become: yes
+  package:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('absent') }}"
+  loop: "{{ os_hardening.packages }}"
+
+- name: Harden Users
+  become: yes
+  user:
+    name: "{{ item.name }}"
+    shell: "{{ item.shell | default('/sbin/noshell') }}"
+    state: "{{ item.state | default('absent') }}"
+    home: "{{ item.home | default(omit) }}"
+  loop: "{{ os_hardening.users }}"
+
+- name: Harden Groups
+  become: yes
+  group:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('absent') }}"
+  loop: "{{ os_hardening.groups }}"
+
+- name: Find min password age
+  become: yes
+  shell:
+     cmd: "grep '^{{ item }}:' /etc/shadow | cut -d: -f4"
+  changed_when: False
+  register: min_password_age_check
+  loop: "{{ os_hardening_password_users }}"
+
+- name: Set min password age
+  become: yes
+  command:
+    cmd: chage -m {{ min_password_age }} {{ item.item }}
+  when: item.stdout | int(0) < min_password_age
+  loop: "{{ min_password_age_check.results }}"

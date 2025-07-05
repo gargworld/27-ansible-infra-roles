@@ -1,0 +1,14 @@
+# /etc/security/limits.conf
+#
+#This file sets the resource limits for the users logged in via PAM.
+#It does not affect resource limits of the system services.
+#
+# 'man limits.conf' for details
+
+{% if os_hardening_login_limits is defined %}
+{% for item in os_hardening_login_limits %}
+{{ item.user }}          hard    maxlogins      {{ item.maxlogins }}
+{% endfor %}
+{% endif %}
+*                hard    maxlogins       {{ os_hardening_max_logins }}
+# End of file

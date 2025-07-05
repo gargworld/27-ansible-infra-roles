@@ -1,0 +1,388 @@
+shell_timeout: 900
+min_password_age: 2
+
+os_hardening_max_logins: 3
+
+os_hardening:
+  ############# MISCELLANEOUS #############
+  disable_usb: true
+  default_umask: "077"
+ 
+  ############# SERVICES #############
+  services:
+    - name: arp-ethers
+      enabled: no
+      state: stopped
+    - name: console-getty
+      enabled: no
+      state: stopped
+    - name: console-shell
+      enabled: no
+      state: stopped
+    - name: debug-shell
+      enabled: no
+      state: stopped
+    - name: gssproxy
+      enabled: no
+      state: stopped
+    - name: kdump
+      enabled: no
+      state: stopped
+      masked: no
+    - name: nfs
+      enabled: no
+      state: stopped
+    - name: nfs-blkmap
+      enabled: no
+      state: stopped
+    - name: nfs-lock
+      enabled: no
+      state: stopped
+    - name: nfs-rquotad
+      enabled: no
+      state: stopped
+    - name: nfs-server
+      enabled: no
+      state: stopped
+    - name: rdisc
+      enabled: no
+      state: stopped
+    - name: sysstat
+      enabled: no
+      state: stopped
+    - name: systemd-bootchart
+      enabled: no
+      state: stopped
+    - name: systemd-readahead-done
+      enabled: no
+      state: stopped
+    - name: tcsd
+      enabled: no
+      state: stopped
+    - name: tuned
+      enabled: no
+      state: stopped
+
+  ############# DIRECTORIES #############
+  directories:
+    - name: '/home/cloud-user'
+      state: 'absent'
+    - name: '/var/spool/mail'
+      mode: '0755'
+    - name: '/var/run'
+      mode: '0755'
+    - name: '/var/lib/nfs'
+      mode: '0755'
+    - name: '/etc/audit'
+      mode: '0700'
+    - name: '/etc/default'
+      mode: '0700'
+    - name: '/etc/security/limits.d'
+      mode: '0755'
+    - name: '/etc/security/namespace.d'
+      mode: '0755'
+    - name: '/etc/security/console.perms.d'
+      mode: '0755'
+    - name: '/etc/security/console.apps'
+      mode: '0755'
+    - name: '/run'
+      mode: '0755'
+    - name: '/root'
+      mode: '0700'
+    - name: '/etc/wpa_supplicant'
+      mode: '0444'
+    - name: '/local/home'
+      mode: '0755'
+      setype: 'home_root_t'
+    - name: '/local/home/root'
+      mode: '0700'
+      owner: 'root'
+      group: 'root'
+      setype: 'user_home_dir_t'
+    - name: '/opt/dpf'
+      mode: '0755'
+
+  ############# FILES #############
+  files:
+    - name: '/etc/cron.deny'
+      state: 'absent'
+    - name: '/etc/at.deny'
+      state: 'absent'
+    - name: '/etc/hosts.equiv'
+      state: 'absent'
+    - name: '/etc/sudoers.d/90-cloud-init-users'
+      state: 'absent'
+    - name: '/local/home/root/.bash_logout'
+      mode: '0640'
+      owner: 'root'
+      group: 'root'
+    - name: '/local/home/root/.bash_profile'
+      mode: '0640'
+      owner: 'root'
+      group: 'root'
+    - name: '/local/home/root/.bashrc'
+      mode: '0640'
+      owner: 'root'
+      group: 'root'
+    - name: '/root/.cshrc'
+      mode: '0600'
+    - name: '/root/.tcshrc'
+      mode: '0600'
+    - name: '/root/.bashrc'
+      mode: '0600'
+    - name: '/root/.bash_profile'
+      mode: '0600'
+    - name: '/var/log/sudo.log'
+      mode: '0600'
+    - name: '/var/log/dmesg'
+      mode: '0600'
+    - name: '/var/log/boot.log'
+      mode: '0600'
+    - name: '/var/log/cron'
+      mode: '0600'
+    - name: '/var/log/messages'
+      mode: '0644'
+    - name: '/var/log/spooler'
+      mode: '0600'
+    - name: '/var/log/btmp'
+      mode: '0600'
+    - name: '/boot/grub2/grub.cfg'
+      mode: '0600'
+    - name: '/etc/aliases.db'
+      mode: '0444'
+    - name: '/etc/default/grub'
+      mode: '0600'
+    - name: '/etc/default/nss'
+      mode: '0600'
+    - name: '/root/.bash_logout'
+      mode: '0600'
+    - name: '/etc/security/namespace.init'
+      mode: '0755'
+    - name: '/etc/ssh/ssh_config'
+      mode: '0600'
+    - name: '/etc/ssh/ssh_host_ecdsa_key'
+      mode: '0600'
+    - name: '/etc/ssh/ssh_host_rsa_key'
+      mode: '0600'
+    - name: '/etc/sysconfig/kernel'
+      mode: '0600'
+    - name: '/usr/bin/sudo'
+      mode: '04111'
+    - name: '/etc/crontab'
+      mode: '0600'
+    - name: '/etc/rsyslog.conf'
+      mode: '0600'
+    - name: '/root/.ssh/known_hosts'
+      mode: '0600'
+    - name: '/etc/sysconfig/wpa_supplicant'
+      mode: '0444'
+    - name: '/usr/sbin/wpa_cli'
+      mode: '0444'
+    - name: '/usr/sbin/wpa_passphrase'
+      mode: '0444'
+    - name: '/usr/sbin/wpa_supplicant'
+      mode: '0444'
+    - name: '/etc/wpa_supplicant/wpa_supplicant.conf'
+      mode: '0444'
+    - name: '/sbin/netreport'
+      mode: '0755'
+    - name: '/sbin/pam_timestamp_check'
+      mode: '0755'
+    - name: '/bin/chage'
+      mode: '0755'
+    - name: '/bin/chfn'
+      mode: '0711'
+    - name: '/bin/chsh'
+      mode: '0711'
+    - name: '/usr/bin/gpasswd'
+      mode: '0755'
+    - name: '/bin/ssh-agent'
+      mode: '0111'
+    - name: '/bin/wall'
+      mode: '0555'
+    - name: '/bin/write'
+      mode: '0755'
+    - name: '/usr/libexec/openssh/ssh-keysign'
+      mode: '0111'
+    - name: '/usr/sbin/userhelper'
+      mode: '0711'
+    - name: '/usr/sbin/usernetctl'
+      mode: '0755'
+    - name: '/sbin/mount.nfs'
+      mode: '0755'
+    - name: '/usr/sbin/netreport'
+      mode: '0755'
+
+  ############# TEMPLATES #############
+  templates:
+    - name: '/etc/at.allow'
+      source: 'at.allow.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/etc/cron.allow'
+      source: 'cron.allow.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/etc/modprobe.d/dist.conf'
+      source: 'dist.conf.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    - name: '/etc/ftpusers'
+      source: 'ftpusers.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0640'
+    - name: '/etc/lockoutExemption'
+      source: 'lockoutExemption.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0640'
+    - name: '/etc/login.defs'
+      source: 'login.defs.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/sbin/noshell'
+      source: 'noshell.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0555'
+    - name: '/etc/security/pwquality.conf'
+      source: 'pwquality.conf.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    - name: '/etc/securetty'
+      source: 'securetty.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/etc/profile.d/tmout.sh'
+      source: 'tmout.sh.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0755'
+    - name: '/etc/default/useradd'
+      source: 'useradd.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/etc/xinetd.conf'
+      source: 'xinetd.conf.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0600'
+    - name: '/etc/security/limits.conf'
+      source: 'limits.conf.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+    - name: '/etc/modprobe.d/blacklist.conf'
+      source: 'blacklist.conf.j2'
+      owner: 'root'
+      group: 'root'
+      mode: '0644'
+
+  ############# PACKAGES #############
+  packages:
+    - name: 'NetworkManager-team'
+      state: 'absent'
+    - name: 'qemu-guest-agent'
+      state: 'absent'
+    - name: 'tuned'
+      state: 'absent'
+    - name: 'glusterfs'
+      state: 'absent'
+    - name: 'python-dateutil-1.*'
+      state: 'absent'
+    - name: 'abrt*'
+      state: 'absent'
+    - name: 'at'
+      state: 'absent'
+    - name: 'iscsi-initiator-utils'
+      state: 'absent'
+    - name: 'mcelog'
+      state: 'absent'
+    - name: 'mdadm'
+      state: 'absent'
+    - name: 'tcpdump'
+      state: 'absent'
+    - name: 'nmap-ncat'
+      state: 'absent'
+
+  ############# USERS #############
+  users:
+    - name: 'ftp'
+      state: 'absent'
+    - name: 'games'
+      state: 'absent'
+    - name: 'gluster'
+      state: 'absent'
+    - name: 'cloud-user'
+      state: 'absent'
+    - name: 'abrt'
+      state: 'absent'
+    - name: 'adm'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'bin'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'daemon'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'dbus'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'lp'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'mail'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'nfsnobody'
+      shell: '/sbin/noshell'
+      state: 'present'
+      home: /local/home/nfsnobody
+    - name: 'nobody'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'nscd'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'ntp'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'operator'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'postfix'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'systemd-network'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'tcpdump'
+      shell: '/sbin/noshell'
+      state: 'present'
+    - name: 'tss'
+      shell: '/sbin/noshell'
+      state: 'present'
+
+  ############# GROUPS #############
+  groups:
+    - name: 'games'
+      state: 'absent'
+    - name: 'video'
+      state: 'absent'
+    - name: 'abrt'
+      state: 'absent'
+
+os_hardening_disabled_targets:
+  - ctrl-alt-del
+
+os_hardening_password_users:
+  - nfsnobody

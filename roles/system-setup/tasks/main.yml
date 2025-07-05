@@ -19,10 +19,19 @@
     warn: false
   when: ansible_distribution == "CentOS" and ansible_distribution_major_version == "7"
 
-- name: Run yum update using shell
-  ansible.builtin.shell: yum -y update
-  args:
-    warn: false
+#- name: Run yum update using shell
+#  ansible.builtin.shell: yum -y update
+#  args:
+#    warn: false
+
+- name: Run yum update with error tolerance
+  shell: yum -y update || echo "Yum update failed"
+  register: update_result
+  ignore_errors: yes
+
+- name: Print yum update result
+  debug:
+    var: update_result.stdout_lines
 
 - name: Copy required repos to AWS EC2 Instance
   become: yes
